@@ -1,7 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+function getApiBase() {
+  const raw = (import.meta.env.VITE_API_URL || '').trim()
+  if (!raw) return '/api'
+  const base = raw.replace(/\/+$/, '')
+  return base.endsWith('/api') ? base : `${base}/api`
+}
+
+const API_BASE = getApiBase()
 
 function shuffle(arr) {
   const a = [...arr]
