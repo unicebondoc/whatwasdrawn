@@ -2,8 +2,10 @@
 
 > *A gesture-powered AI oracle card reading platform. Draw cards with your hands. Receive wisdom from the stars.*
 
+Built by Unice Bondoc (Life of Mooni) · whatwasdrawn.com
+
 ![What Was Drawn](https://img.shields.io/badge/oracle-Quiet%20Whiskers-a066ff?style=for-the-badge)
-![Gemini](https://img.shields.io/badge/AI-Gemini%201.5%20Flash-4285F4?style=for-the-badge&logo=google)
+![OpenAI](https://img.shields.io/badge/AI-OpenAI%20GPT--4o-412991?style=for-the-badge&logo=openai)
 ![React](https://img.shields.io/badge/frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react)
 ![FastAPI](https://img.shields.io/badge/backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
 ![Docker](https://img.shields.io/badge/container-Docker-2496ED?style=for-the-badge&logo=docker)
@@ -15,7 +17,7 @@
 **What Was Drawn** is a full-stack web application that lets users draw oracle cards using real hand gestures captured via webcam. The platform uses:
 
 - **MediaPipe Hands** to classify gestures in real time (open palm, pinch, point, victory sign)
-- **Google Gemini 1.5 Flash** to generate personalised, poetic 3-card spread readings
+- **OpenAI GPT-4o** to generate personalised, poetic 3-card spread readings
 - **Pinecone + LangChain RAG** to enrich readings with semantically retrieved card wisdom
 - A **44-card cat-themed oracle deck** — the *Quiet Whiskers Oracle* — with full meanings, reversed meanings, imagery descriptions, elemental associations, and keywords
 
@@ -27,7 +29,7 @@
 |---|---|
 | 🤚 Gesture Control | Open palm draws cards; pinch confirms; peace/victory resets |
 | 🃏 44-Card Deck | Complete Quiet Whiskers Oracle with cat-themed art descriptions |
-| 🤖 AI Readings | Gemini 1.5 Flash generates unique, poetic 3-card narratives |
+| 🤖 AI Readings | OpenAI GPT-4o generates unique, poetic 3-card narratives |
 | 🔍 RAG Pipeline | Pinecone vector search retrieves relevant card context per reading |
 | 🎨 Mystical UI | Dark theme, glowing cards, animated star field, fluid transitions |
 | 📱 Responsive | Works on desktop and tablet |
@@ -40,9 +42,9 @@
 ```
 Frontend    React 18 · Vite · Tailwind CSS · Framer Motion · MediaPipe Hands
 Backend     Python 3.12 · FastAPI · Uvicorn
-AI          Google Gemini 1.5 Flash (via google-generativeai)
+AI          OpenAI GPT-4o
 RAG         LangChain · Pinecone (serverless)
-Embeddings  Google text-embedding-001 (768-dim)
+Embeddings  OpenAI text-embedding-ada-002
 Container   Docker · docker-compose
 ```
 
@@ -53,7 +55,7 @@ Container   Docker · docker-compose
 ### Prerequisites
 
 - Docker Desktop (or Docker Engine + Compose)
-- A **Gemini API key** — [get one free at Google AI Studio](https://aistudio.google.com/app/apikey)
+- An **OpenAI API key**
 - A **Pinecone API key** — [sign up free at Pinecone](https://app.pinecone.io) *(optional — app works without it, RAG is disabled)*
 
 ### 1. Clone and configure
@@ -223,7 +225,7 @@ what-was-drawn/
 │   │   │   ├── cards.py             # Card endpoints
 │   │   │   └── readings.py          # Reading generation
 │   │   ├── services/
-│   │   │   ├── gemini_service.py    # Gemini 1.5 Flash
+│   │   │   ├── openai_service.py    # OpenAI GPT-4o
 │   │   │   └── pinecone_service.py  # Pinecone RAG
 │   │   ├── models/schemas.py        # Pydantic models
 │   │   └── data/oracle_cards.json   # 44-card deck
@@ -240,13 +242,13 @@ what-was-drawn/
 
 | Variable | Required | Description |
 |---|---|---|
-| `GEMINI_API_KEY` | Yes (for AI readings) | Google AI Studio key |
+| `OPENAI_API_KEY` | Yes (for AI readings) | OpenAI API key |
 | `PINECONE_API_KEY` | No (for RAG) | Pinecone API key |
 | `PINECONE_INDEX` | No | Index name (default: `what-was-drawn`) |
 | `PINECONE_ENV` | No | Region (default: `us-east-1`) |
 | `VITE_API_URL` | No | Frontend API base URL override |
 
-The app degrades gracefully: without Gemini, a fallback reading is used; without Pinecone, readings skip the RAG step.
+The app degrades gracefully: without OpenAI, a fallback reading is used; without Pinecone, readings skip the RAG step.
 
 ---
 
@@ -255,6 +257,15 @@ The app degrades gracefully: without Gemini, a fallback reading is used; without
 Card artwork lives in `frontend/public/cards/` and is served at `/cards/card-{id}.png` (1–44) plus `/cards/card-back.png`. Nginx caches all images for one year via the `Cache-Control: public, immutable` header already present in `frontend/nginx.conf`.
 
 > **Production note:** The raw card images are ~4.9 MB each. Optimise them to ~200 KB before deploying to production using a tool such as [Squoosh](https://squoosh.app), `sharp`, or `imagemagick` (`mogrify -quality 80 -resize 800x> *.png`). This reduces initial load time by ~24× per card.
+
+---
+
+## Creator
+Built by **Unice Bondoc** — AI Software Engineer & creative technologist.
+- 🌐 Portfolio: [unicebondoc.com](https://unicebondoc.com)
+- ✍️ Blog: [medium.com/@unicebondoc](https://medium.com/@unicebondoc)
+- ☕ Ko-fi: [ko-fi.com/lifeofmooni](https://ko-fi.com/lifeofmooni)
+- 🃏 Physical deck: [unikre.com.au](https://unikre.com.au)
 
 ---
 
