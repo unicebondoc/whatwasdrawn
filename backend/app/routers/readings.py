@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import random
 from datetime import datetime, timezone
 from pathlib import Path
@@ -76,6 +77,8 @@ async def draw_spread(request: DrawRequest):
         for c in cards_in_spread
     ]
 
+    if os.getenv("DEBUG_QUESTION_FLOW", "").lower() == "true":
+        print(f"Question received: {request.question}")
     if request.question and request.question.strip():
         logger.info("Draw: seeker question present (length=%d)", len(request.question.strip()))
     result = await openai_service.generate_reading(
@@ -140,6 +143,8 @@ async def interpret_specific_cards(request: SelectionRequest):
     ]
 
     try:
+        if os.getenv("DEBUG_QUESTION_FLOW", "").lower() == "true":
+            print(f"Question received: {request.question}")
         if request.question and request.question.strip():
             logger.info("Interpret: seeker question present (length=%d)", len(request.question.strip()))
         result = await openai_service.generate_reading(

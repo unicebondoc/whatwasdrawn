@@ -109,8 +109,8 @@ export function useOracle() {
     const body = {
       cards: selectedCards.map(c => ({ id: c.id, is_reversed: c.isReversed })),
       spread_type: 'three_card',
+      question: String(q ?? '').trim(),
     }
-    if (q && String(q).trim()) body.question = String(q).trim()
 
     try {
       const [response] = await Promise.all([

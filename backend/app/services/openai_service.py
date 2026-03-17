@@ -114,7 +114,7 @@ Respond ONLY in valid JSON:
     {{"position": "present", "insight": "2-3 sentences MAXIMUM"}},
     {{"position": "future", "insight": "2-3 sentences MAXIMUM"}}
   ],
-  "whisper": "2-3 sentences tying all cards into one reflection, ending with a short *italic* poetic line"
+  "whisper": "MIN 3 paragraphs, MAX 350 words. Paragraph 1 must reference the seeker's question. Must naturally mention all three card names. Final line: a specific poetic line tied to their situation (wrap that final line in *asterisks*)."
 }}
 
 RULES:
@@ -127,12 +127,20 @@ RULES:
 
     model = os.getenv("OPENAI_MODEL", "").strip() or _default_model
 
+    system_question = (
+        f"The seeker came with this question: '{seeker_q}'\n\n"
+        "Speak directly to this question through the cards. Do not give a generic reading.\n"
+        "Reference their specific concern naturally throughout the narrative.\n"
+        if seeker_q
+        else "The seeker came without a specific question, seeking open guidance.\n"
+    )
     system_msg = (
-        "You are The Quiet Whiskers Oracle. Return ONLY valid JSON with keys: "
-        "'cards' (array of {position, insight}) and 'whisper' (string). "
+        "You are The Quiet Whiskers Oracle.\n\n"
+        f"{system_question}\n"
+        "Return ONLY valid JSON with keys: 'cards' (array of {position, insight}) and 'whisper' (string). "
         "No markdown, no extra keys. "
-        "Length: each insight exactly 2–3 sentences; whisper exactly 2–3 sentences. "
-        "Be concrete, warm, and answer the seeker's question."
+        "Each card insight must be exactly 2–3 sentences. "
+        "The whisper must be MIN 3 paragraphs and MAX 350 words."
     )
 
     try:
@@ -143,7 +151,7 @@ RULES:
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=350,
+            max_tokens=650,
             temperature=0.6,
             response_format={"type": "json_object"},
         )
