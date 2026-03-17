@@ -19,6 +19,7 @@ class OracleCard(BaseModel):
 class DrawRequest(BaseModel):
     gesture: Optional[str] = "open_palm"
     spread_type: Optional[str] = "three_card"
+    question: Optional[str] = None
 
 
 class CardSelection(BaseModel):

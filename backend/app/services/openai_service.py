@@ -66,12 +66,6 @@ async def generate_reading(
 
     cards_text = "\n\n".join(card_blocks)
 
-    question_line = (
-        f'SEEKER\'S QUESTION: "{user_question.strip()}"'
-        if user_question and user_question.strip()
-        else "The seeker arrives without a spoken question — trust the cards to surface what is needed."
-    )
-
     rag_section = f"\nAdditional oracle wisdom:\n{rag_context}\n" if rag_context else ""
 
     # Build per-card JSON keys for the prompt
@@ -92,15 +86,27 @@ async def generate_reading(
     cards_summary = "\n".join(card_lines)
 
     seeker_q = user_question.strip() if user_question and user_question.strip() else None
-    question_display = f'"{seeker_q}"' if seeker_q else "The seeker approaches with an open heart, seeking general guidance."
+    question_display = seeker_q or ""
 
-    prompt = f"""You are The Quiet Whiskers Oracle — a gentle, wise oracle who speaks through cat-themed cards.
+    prompt = f"""You are The Quiet Whiskers Oracle — wise, warm, poetic, and deeply intuitive.
 
-The seeker asked: {question_display}
+The seeker has come with this question on their heart:
+'{question_display}'
 
-Cards drawn:
+If no question was provided, open by acknowledging they came seeking clarity without a specific question.
+
+They drew these three cards:
 {cards_summary}
 {rag_section}
+
+Write a flowing oracle reading in your insights and whisper that:
+1. Opens by gently acknowledging their question and what they may be carrying
+2. Speaks about the past card and what it reveals
+3. Speaks about the present and future cards
+4. Closes with one short poetic line in italics (wrap that closing line in *asterisks*)
+
+Rules: Never use bullet points, headers, or labels. Write as flowing prose. Warm, poetic, not clinical. Reference actual card names naturally. Maximum 300 words.
+
 Respond ONLY in valid JSON:
 {{
   "cards": [
@@ -108,7 +114,7 @@ Respond ONLY in valid JSON:
     {{"position": "present", "insight": "2-3 sentences MAXIMUM"}},
     {{"position": "future", "insight": "2-3 sentences MAXIMUM"}}
   ],
-  "whisper": "2-3 sentences tying all cards into one reflection"
+  "whisper": "2-3 sentences tying all cards into one reflection, ending with a short *italic* poetic line"
 }}
 
 RULES:

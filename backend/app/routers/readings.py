@@ -76,10 +76,13 @@ async def draw_spread(request: DrawRequest):
         for c in cards_in_spread
     ]
 
+    if request.question and request.question.strip():
+        logger.info("Draw: seeker question present (length=%d)", len(request.question.strip()))
     result = await openai_service.generate_reading(
         cards=cards_for_llm,
         spread_type=spread_type,
         rag_context=rag_context,
+        user_question=request.question,
     )
 
     ai_cards = result.get("cards", [])
