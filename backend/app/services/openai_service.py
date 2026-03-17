@@ -4,6 +4,13 @@ from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 
+# Debug only (opt-in): helps verify Railway env injection without leaking full keys.
+# Set DEBUG_OPENAI_KEY=true in Railway to enable.
+if os.getenv("DEBUG_OPENAI_KEY", "").lower() == "true":
+    _k = os.getenv("OPENAI_API_KEY", "")
+    print(f"DEBUG KEY LENGTH: {len(_k)}")
+    print(f"DEBUG KEY START: {_k[:8] if _k else 'EMPTY'}")
+
 _openai_client = None
 _default_model = "gpt-4o-mini"
 
