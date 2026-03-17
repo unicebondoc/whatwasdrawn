@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Analytics } from '@vercel/analytics/react'
 
 import StarField        from './components/StarField'
 import WebcamFeed       from './components/WebcamFeed'
@@ -1289,6 +1290,7 @@ export default function App() {
           {cameraEnabled ? '📷 on' : '📷 off'}
         </button>
       </div>
+      <Analytics />
     </div>
   )
 }
