@@ -314,6 +314,27 @@ export default function PhaseIntro({ onBegin }) {
           </motion.button>
         </motion.div>
 
+        {/* Camera safety notice */}
+        <div
+          style={{
+            maxWidth: 340,
+            marginTop: 16,
+            textAlign: 'center',
+            fontSize: 12,
+            lineHeight: 1.7,
+            color: 'rgba(200, 185, 255, 0.65)',
+            fontFamily: 'Inter, sans-serif',
+          }}
+        >
+          <span style={{ fontSize: 14 }}>🔒</span>{' '}
+          Your camera never leaves your device.
+          <br />
+          No video is recorded, stored, or transmitted —<br />
+          ever. Gesture detection runs 100% locally
+          <br />
+          in your browser.
+        </div>
+
       </div>
     </motion.div>
   )

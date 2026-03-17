@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import DrawRequest, SelectionRequest, SpreadReading, CardInSpread, OracleCard
 from app.services import openai_service, pinecone_service
+from app.main import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/readings", tags=["readings"])
@@ -32,6 +33,7 @@ def _load_cards() -> List[dict]:
 
 
 @router.post("/draw", response_model=SpreadReading)
+@limiter.limit("10/hour")
 async def draw_spread(request: DrawRequest):
     """Draw cards and generate an AI-powered oracle reading."""
     spread_type = request.spread_type or "three_card"

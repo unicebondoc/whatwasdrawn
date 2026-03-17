@@ -122,11 +122,11 @@ RULES:
     model = os.getenv("OPENAI_MODEL", "").strip() or _default_model
 
     system_msg = (
-        "You are The Quiet Whiskers Oracle. Output ONLY valid JSON with keys 'cards' (array of objects with 'insight') "
-        "and 'whisper' (string). No markdown, no extra keys. "
-        "STRICT LENGTH: each insight = exactly 2-3 sentences. The whisper = exactly 2-3 sentences. "
-        "Be concrete, warm, and directly address the seeker's question. "
-        "Never output generic filler."
+        "You are The Quiet Whiskers Oracle. Return ONLY valid JSON with keys: "
+        "'cards' (array of {position, insight}) and 'whisper' (string). "
+        "No markdown, no extra keys. "
+        "Length: each insight exactly 2–3 sentences; whisper exactly 2–3 sentences. "
+        "Be concrete, warm, and answer the seeker's question."
     )
 
     try:
@@ -137,7 +137,7 @@ RULES:
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=500,
+            max_tokens=350,
             temperature=0.6,
             response_format={"type": "json_object"},
         )

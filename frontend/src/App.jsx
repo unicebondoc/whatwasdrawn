@@ -263,7 +263,7 @@ function ReadingCard({ cardData, index, revealed }) {
 }
 
 // ── Unified oracle reading panel — the final whisper ────────────────────────
-function ReadingPanel({ whisper, isLoading, onReset }) {
+function ReadingPanel({ whisper, isLoading, onReset, onWhisperRevealed }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -296,6 +296,7 @@ function ReadingPanel({ whisper, isLoading, onReset }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.75, duration: 0.85 }}
+            onAnimationComplete={() => onWhisperRevealed?.()}
             style={{
               background:           'rgba(20,10,45,0.5)',
               backdropFilter:       'blur(20px)',
@@ -399,81 +400,85 @@ function ReadingPanel({ whisper, isLoading, onReset }) {
   )
 }
 
-// ── Soft reading gate — shown after first reading ────────────────────────────
-function GateScreen({ onProceed, readingCards }) {
-  const [clipboardToast, setClipboardToast] = useState(false)
-
-  const handleShare = async () => {
-    const cardNames = readingCards?.map(c => c.card?.name).filter(Boolean) || []
-    const shareData = {
-      title: 'My Quiet Whiskers Oracle Reading',
-      text: cardNames.length >= 3
-        ? `The oracle drew: ${cardNames[0]}, ${cardNames[1]}, ${cardNames[2]}. What will yours reveal?`
-        : 'The oracle has spoken. What will yours reveal?',
-      url: 'https://whatwasdrawn.com',
-    }
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData)
-      } else {
-        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`)
-        setClipboardToast(true)
-        setTimeout(() => setClipboardToast(false), 2500)
-      }
-      sessionStorage.setItem('sharedReading', 'true')
-      onProceed()
-    } catch {
-      // User cancelled — don't unlock
-    }
-  }
-
-  const handleKofiClick = () => {
-    sessionStorage.setItem('supportedOracle', 'true')
-    setTimeout(() => onProceed(), 150)
-  }
-
+// ── Soft gate overlay (after 3 readings) ─────────────────────────────────────
+function SoftGate({ onSupport }) {
   return (
-    <div className="gate-screen">
-      <div className="gate-card">
-        <p className="gate-deco">✦ ✦ ✦</p>
-        <h2 className="gate-title">The oracle rests between readings.</h2>
-        <p className="gate-subtitle">
-          Each reading holds its weight.<br />
-          Sit with this one before seeking another.
-        </p>
-
-        <a
-          href="https://unikre.com.au"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="gate-deck-cta"
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        backgroundImage: 'url(/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 400,
+          textAlign: 'center',
+          background: 'rgba(20, 10, 45, 0.7)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(180, 140, 255, 0.2)',
+          borderRadius: 24,
+          padding: '48px 36px',
+          boxShadow: '0 22px 70px rgba(0,0,0,0.75)',
+        }}
+      >
+        <div style={{ fontSize: 48, lineHeight: 1, marginBottom: 18 }}>🌙</div>
+        <div
+          style={{
+            fontFamily: 'Cormorant Garamond, Georgia, serif',
+            fontStyle: 'italic',
+            fontSize: 28,
+            color: 'rgba(255, 248, 235, 0.97)',
+            marginBottom: 14,
+          }}
         >
-          <span className="deck-cta-label">Get the Physical Deck</span>
-          <span className="deck-cta-sub">Unlimited readings in your hands</span>
-        </a>
-
-        <button onClick={handleShare} className="gate-action-btn">
-          Share your reading
-          <span className="gate-action-sub">unlocks another draw</span>
-        </button>
+          The oracle grows tired...
+        </div>
+        <div
+          style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 16,
+            color: 'rgba(210, 190, 255, 0.85)',
+            lineHeight: 1.6,
+            marginBottom: 22,
+            whiteSpace: 'pre-line',
+          }}
+        >
+          {'You have received three readings today.\nThe cards need time to rest — and so do you.'}
+        </div>
 
         <a
           href="https://ko-fi.com/lifeofmooni"
           target="_blank"
           rel="noopener noreferrer"
-          className="gate-action-btn"
-          onClick={handleKofiClick}
+          className="btn-mystical-primary"
+          style={{ display: 'inline-block', textDecoration: 'none' }}
+          onClick={onSupport}
         >
-          ☕ Buy the oracle a treat
-          <span className="gate-action-sub">unlocks another draw</span>
+          ☕ Support the oracle to continue
         </a>
 
-        <p className="gate-footer">Come back tomorrow for a fresh reading ✦</p>
+        <div
+          style={{
+            marginTop: 16,
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 13,
+            color: 'rgba(180, 160, 255, 0.6)',
+          }}
+        >
+          ✨ Come back tomorrow for more readings.
+        </div>
       </div>
-
-      {clipboardToast && (
-        <div className="clipboard-toast">Copied to clipboard!</div>
-      )}
     </div>
   )
 }
@@ -555,21 +560,41 @@ export default function App() {
     }
   }, [phase])
 
-  // ── Soft gate state ────────────────────────────────────────────────────────
-  const [showGate, setShowGate] = useState(false)
-  const hasIncrementedRef = useRef(false)
+  // ── Reading limit (3 free) + soft gate ─────────────────────────────────────
+  const isPreview = useMemo(() => {
+    try { return new URLSearchParams(window.location.search).get('preview') === 'true' } catch { return false }
+  }, [])
 
-  // Increment reading count once per completed reading (when whisper arrives)
-  useEffect(() => {
-    if (reading?.whisper && !hasIncrementedRef.current) {
-      hasIncrementedRef.current = true
-      const count = parseInt(sessionStorage.getItem('readingCount') || '0') + 1
-      sessionStorage.setItem('readingCount', count.toString())
-    }
-    if (phase !== 'reading') {
-      hasIncrementedRef.current = false
-    }
-  }, [reading?.whisper, phase])
+  const COUNT_KEY = 'wwd_reading_count'
+  const SUPPORTED_KEY = 'wwd_supported'
+
+  const [readingCount, setReadingCount] = useState(() => {
+    try { return parseInt(localStorage.getItem(COUNT_KEY) || '0') || 0 } catch { return 0 }
+  })
+  const [showSoftGate, setShowSoftGate] = useState(false)
+  const lastCountedWhisperRef = useRef(null)
+
+  const handleWhisperRevealed = useCallback(() => {
+    if (isPreview) return
+    const signature = reading?.created_at || reading?.whisper
+    if (!signature) return
+    if (lastCountedWhisperRef.current === signature) return
+    lastCountedWhisperRef.current = signature
+    setReadingCount(prev => {
+      const next = prev + 1
+      try { localStorage.setItem(COUNT_KEY, String(next)) } catch {}
+      return next
+    })
+  }, [isPreview, reading?.created_at, reading?.whisper])
+
+  const handleSupportOracle = useCallback(() => {
+    try {
+      localStorage.setItem(SUPPORTED_KEY, 'true')
+      localStorage.setItem(COUNT_KEY, '0')
+    } catch {}
+    setReadingCount(0)
+    setShowSoftGate(false)
+  }, [])
 
   // ── Per-frame pointer handler (MediaPipe → finger position + gestures) ─────
   const handlePointerMove = useCallback((pos, gesture) => {
@@ -644,21 +669,6 @@ export default function App() {
     reset()
   }, [reset])
 
-  // Gate-aware reset — shows gate if a reading has been completed this session
-  const handleResetWithGate = useCallback(() => {
-    const count = parseInt(sessionStorage.getItem('readingCount') || '0')
-    if (count >= 1) {
-      setShowGate(true)
-    } else {
-      handleReset()
-    }
-  }, [handleReset])
-
-  const handleGateProceed = useCallback(() => {
-    setShowGate(false)
-    handleReset()
-  }, [handleReset])
-
   // ── Gesture handler (phase-level gestures) ─────────────────────────────────
   const handleGesture = useCallback((gestureName) => {
     if (gestureName === 'open_palm' && phase === 'intro') {
@@ -674,9 +684,13 @@ export default function App() {
       if (phase === 'spread' || phase === 'reading') { handleReset(); return }
     }
     if (gestureName === 'open_palm' && phase === 'spread' && selectedCountRef.current === MAX_SELECTIONS) {
+      if (!isPreview && readingCount >= 3) {
+        setShowSoftGate(true)
+        return
+      }
       drawFromSelection(selectedCardsRef.current, userQuestion)
     }
-  }, [phase, userQuestion, beginReading, submitQuestion, handleReset, drawFromSelection])
+  }, [phase, userQuestion, beginReading, submitQuestion, handleReset, drawFromSelection, isPreview, readingCount])
 
   const handleBothPalmsOpen = useCallback(() => {
     if (phase === 'intro') beginReading()
@@ -950,17 +964,63 @@ export default function App() {
               <ReadingPanel
                 whisper={reading?.whisper}
                 isLoading={isLoading && !reading}
-                onReset={reading ? handleResetWithGate : undefined}
+                onReset={reading ? handleReset : undefined}
+                onWhisperRevealed={handleWhisperRevealed}
               />
 
               {/* Footer */}
-              <p style={{
-                marginTop: 32, textAlign: 'center',
-                fontFamily: 'Raleway, sans-serif', fontSize: '11px',
-                color: 'rgba(210,200,240,0.45)', letterSpacing: '0.06em',
-              }}>
-                © 2025 What Was Drawn
-              </p>
+              <div style={{ marginTop: 32, textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: 'Raleway, sans-serif',
+                  fontSize: '11px',
+                  color: 'rgba(210,200,240,0.45)',
+                  letterSpacing: '0.06em',
+                }}>
+                  © 2025 What Was Drawn
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 8,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 24,
+                  }}
+                >
+                  <a
+                    href="https://instagram.com/lifeofmooni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: 13,
+                      color: 'rgba(200, 185, 255, 0.65)',
+                      textDecoration: 'none',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255, 248, 235, 0.9)'; e.currentTarget.style.textDecoration = 'underline' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200, 185, 255, 0.65)'; e.currentTarget.style.textDecoration = 'none' }}
+                  >
+                    @lifeofmooni
+                  </a>
+
+                  <a
+                    href="https://ko-fi.com/lifeofmooni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: 13,
+                      color: 'rgba(200, 185, 255, 0.65)',
+                      textDecoration: 'none',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255, 248, 235, 0.9)'; e.currentTarget.style.textDecoration = 'underline' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200, 185, 255, 0.65)'; e.currentTarget.style.textDecoration = 'none' }}
+                  >
+                    ☕ Ko-fi
+                  </a>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -1094,12 +1154,9 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* ── Soft reading gate ── */}
-      {showGate && (
-        <GateScreen
-          onProceed={handleGateProceed}
-          readingCards={readingData?.cards}
-        />
+      {/* ── Soft gate (after 3 readings) ── */}
+      {showSoftGate && !isPreview && (
+        <SoftGate onSupport={handleSupportOracle} />
       )}
 
       {/* ── Webcam — 100×75, bottom right ── */}

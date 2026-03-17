@@ -4,8 +4,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
-from app.routers import cards, readings, speech
 from app.services import openai_service, pinecone_service
 from app.models.schemas import HealthResponse
 
@@ -15,6 +17,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+limiter = Limiter(key_func=get_remote_address)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,6 +36,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
 
 app.add_middleware(
@@ -43,6 +49,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"],
 )
 
+from app.routers import cards, readings, speech  # imported after limiter to avoid circular imports
 app.include_router(cards.router)
 app.include_router(readings.router)
 app.include_router(speech.router)
