@@ -143,6 +143,20 @@ export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange, came
         )}
       </motion.div>
 
+      <div
+        style={{
+          fontSize: 11,
+          lineHeight: 1.7,
+          color: 'rgba(200, 185, 255, 0.6)',
+          textAlign: 'center',
+          maxWidth: 380,
+          margin: '8px auto 16px auto',
+          fontFamily: 'Inter, sans-serif',
+        }}
+      >
+        🔒 Your question is private. It&apos;s sent securely to generate your reading and is never stored, logged, or seen by anyone.
+      </div>
+
       {/* Suggestion chips */}
       {showChips && (
         <motion.div
