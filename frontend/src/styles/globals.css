@@ -1,0 +1,493 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-oracle-shadow;
+    font-family: 'Raleway', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    background-color: #0a0814;
+    color: rgba(235, 225, 255, 0.92);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+}
+
+@layer components {
+  .oracle-card {
+    @apply relative rounded-2xl overflow-hidden;
+    background: rgba(232, 220, 200, 0.03);
+    border: 1px solid rgba(212, 175, 108, 0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  /* Secondary button */
+  .btn-mystical {
+    @apply relative rounded-full font-medium tracking-widest uppercase;
+    @apply transition-all duration-300;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 10px 22px;
+    background: rgba(212, 175, 108, 0.04);
+    border: 1px solid rgba(212, 175, 108, 0.25);
+    color: rgba(255, 248, 235, 1);
+    border-radius: 20px;
+  }
+
+  .btn-mystical:hover {
+    background: rgba(212, 175, 108, 0.1);
+    border-color: rgba(212, 175, 108, 0.45);
+    color: rgba(255, 248, 235, 1);
+  }
+
+  .btn-mystical:active {
+    transform: translateY(0);
+  }
+
+  .btn-mystical:disabled {
+    @apply opacity-40 cursor-not-allowed;
+    transform: none;
+  }
+
+  /* Primary CTA — "Begin a New Reading" / "Reveal Reading" */
+  .btn-mystical-primary {
+    @apply relative rounded-full font-medium tracking-widest uppercase;
+    @apply transition-all duration-300;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 14px 36px;
+    background: rgba(212, 175, 108, 0.06);
+    border: 1.5px solid rgba(212, 175, 108, 0.35);
+    color: rgba(255, 248, 235, 1);
+    border-radius: 28px;
+  }
+
+  .btn-mystical-primary:hover {
+    background: rgba(212, 175, 108, 0.12);
+    border-color: rgba(212, 175, 108, 0.6);
+    color: rgba(255, 248, 235, 1);
+  }
+
+  .btn-mystical-primary:active {
+    transform: translateY(0);
+  }
+
+  .text-gold-shimmer {
+    background: linear-gradient(90deg, #d4af6c, #f0d898, #d4af6c);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .glass-panel {
+    background: rgba(10, 8, 20, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(212, 175, 108, 0.12);
+    border-radius: 16px;
+  }
+
+  .landmark-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(160, 102, 255, 0.9);
+    box-shadow: 0 0 6px rgba(160, 102, 255, 0.8);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .gesture-indicator {
+    @apply fixed bottom-6 left-1/2 -translate-x-1/2 z-50;
+    @apply glass-panel px-6 py-3;
+    @apply flex items-center gap-3;
+    @apply transition-all duration-300;
+  }
+
+  .star-bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    animation: starDrift linear infinite;
+  }
+}
+
+@layer utilities {
+  .writing-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
+/* ── Textarea placeholder ─────────────────────────────────────────────────── */
+textarea::placeholder {
+  color: rgba(210, 200, 240, 0.6);
+}
+
+/* ── User question display ────────────────────────────────────────────────── */
+.user-question-display {
+  text-align: center;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  color: rgba(235, 225, 255, 0.92);
+  margin-bottom: 24px;
+  padding: 7px 20px;
+  border: 1px solid rgba(212, 175, 108, 0.12);
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ── Insight box (left border accent) ────────────────────────────────────── */
+.insight-box {
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: rgba(212, 175, 108, 0.04);
+  border-left: 2px solid rgba(212, 175, 108, 0.2);
+}
+
+/* ── Monetization CTAs ────────────────────────────────────────────────────── */
+.cta-section {
+  max-width: 400px;
+  margin: 32px auto 0;
+  padding: 32px 28px;
+  background: rgba(212, 175, 108, 0.04);
+  border: 1px solid rgba(212, 175, 108, 0.12);
+  border-radius: 16px;
+}
+
+.cta-section-header {
+  text-align: center;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  color: rgba(235, 225, 255, 0.92);
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.deck-cta {
+  display: block;
+  text-align: center;
+  padding: 18px 24px;
+  background: rgba(212, 175, 108, 0.1);
+  border: 1.5px solid rgba(212, 175, 108, 0.45);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.deck-cta:hover {
+  background: rgba(212, 175, 108, 0.16);
+  border-color: rgba(212, 175, 108, 0.7);
+  transform: translateY(-1px);
+}
+
+.deck-cta-label {
+  display: block;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(255, 248, 235, 1);
+  margin-bottom: 4px;
+}
+
+.deck-cta-sub {
+  display: block;
+  font-family: 'Raleway', sans-serif;
+  font-size: 12px;
+  color: rgba(235, 225, 255, 0.92);
+  letter-spacing: 0.03em;
+}
+
+.kofi-cta {
+  display: block;
+  text-align: center;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 108, 0.15);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 0;
+}
+
+.kofi-cta:hover {
+  background: rgba(212, 175, 108, 0.05);
+  border-color: rgba(212, 175, 108, 0.3);
+}
+
+.kofi-cta-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: rgba(235, 225, 255, 0.92);
+}
+
+/* ── Gesture hint ─────────────────────────────────────────────────────────── */
+.gesture-hint {
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  color: rgba(210, 200, 240, 0.85);
+  margin-top: 10px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* ── Gate screen ──────────────────────────────────────────────────────────── */
+.gate-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  background: rgba(10, 8, 20, 0.95);
+  padding: 16px;
+}
+
+.gate-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 48px 36px;
+  text-align: center;
+}
+
+.gate-deco {
+  font-size: 12px;
+  color: rgba(212, 175, 108, 0.2);
+  letter-spacing: 0.5em;
+  margin-bottom: 20px;
+}
+
+.gate-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: rgba(255, 248, 235, 1);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+.gate-subtitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16px;
+  color: rgba(235, 225, 255, 0.92);
+  font-style: italic;
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+.gate-deck-cta {
+  display: block;
+  text-align: center;
+  padding: 18px 24px;
+  background: rgba(212, 175, 108, 0.1);
+  border: 1.5px solid rgba(212, 175, 108, 0.45);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.gate-deck-cta:hover {
+  background: rgba(212, 175, 108, 0.16);
+  border-color: rgba(212, 175, 108, 0.7);
+  transform: translateY(-1px);
+}
+
+.gate-action-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 14px 24px;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 108, 0.2);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: rgba(255, 248, 235, 1);
+  font-size: 16px;
+}
+
+.gate-action-btn:hover {
+  background: rgba(212, 175, 108, 0.07);
+  border-color: rgba(212, 175, 108, 0.38);
+  color: rgba(255, 248, 235, 1);
+}
+
+.gate-action-sub {
+  display: block;
+  font-size: 11px;
+  color: rgba(210, 200, 240, 0.85);
+  margin-top: 3px;
+  font-family: 'Raleway', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.gate-footer {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: rgba(210, 200, 240, 0.85);
+  font-style: italic;
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+/* ── Clipboard toast ──────────────────────────────────────────────────────── */
+.clipboard-toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(212, 175, 108, 0.12);
+  border: 1px solid rgba(212, 175, 108, 0.25);
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 248, 235, 1);
+}
+
+/* ── App footer ───────────────────────────────────────────────────────────── */
+.app-footer {
+  text-align: center;
+  padding: 16px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  color: rgba(210, 200, 240, 0.85);
+  letter-spacing: 0.04em;
+}
+
+.app-footer a {
+  color: rgba(210, 200, 240, 0.85);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.app-footer a:hover {
+  color: rgba(255, 248, 235, 0.95);
+}
+
+.app-footer span {
+  margin: 0 8px;
+}
+
+/* ── Suggestion chips (question screen) ──────────────────────────────────── */
+.chip-btn {
+  font-family: 'Raleway', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255, 248, 235, 0.92);
+  border: 1px solid rgba(212, 175, 108, 0.15);
+  border-radius: 20px;
+  padding: 6px 14px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.chip-btn:hover {
+  color: rgba(255, 248, 235, 1);
+  border-color: rgba(212, 175, 108, 0.4);
+  background: rgba(212, 175, 108, 0.05);
+}
+
+/* ── Ambient glow orbs ────────────────────────────────────────────────────── */
+.bg-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140, 100, 180, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Mic button pulse ring */
+@keyframes ping {
+  75%, 100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Scroll arrow bounce */
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(8px); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+.scroll-indicator-chevron {
+  animation: bob 1.8s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 8, 20, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 108, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 108, 0.4);
+}
