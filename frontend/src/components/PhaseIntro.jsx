@@ -165,7 +165,7 @@ function CardSpreadHero() {
 }
 
 // ── Main landing ─────────────────────────────────────────────────────────────
-export default function PhaseIntro({ onBegin }) {
+export default function PhaseIntro({ onBegin, cameraEnabled = true }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -309,7 +309,7 @@ export default function PhaseIntro({ onBegin }) {
               letterSpacing: '0.05em',
               textShadow:    '0 1px 6px rgba(0,0,0,0.4)',
             }}>
-              Open your palm to begin
+              {cameraEnabled ? 'Open your palm to begin' : 'Tap to begin · Camera is off'}
             </span>
           </motion.button>
         </motion.div>

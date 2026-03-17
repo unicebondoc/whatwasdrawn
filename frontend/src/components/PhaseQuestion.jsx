@@ -35,7 +35,7 @@ function VictoryIcon() {
   )
 }
 
-export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange }) {
+export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange, cameraEnabled = true }) {
   const [question, setQuestion]       = useState('')
   const [showChips, setShowChips]     = useState(false)
 
@@ -184,18 +184,31 @@ export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange }) {
         transition={{ delay: 0.45, duration: 0.65 }}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}
       >
-        {/* Peace sign hint */}
-        <p style={{
-          fontFamily:    'Raleway, sans-serif',
-          fontSize:      '14px',
-          color:         'rgba(235,220,255,0.78)',
-          textShadow:    '0 1px 6px rgba(0,0,0,0.4)',
-          letterSpacing: '0.05em',
-          margin:        0,
-          textAlign:     'center',
-        }}>
-          ✌️ Show a peace sign when your question is ready
-        </p>
+        {cameraEnabled ? (
+          <p style={{
+            fontFamily:    'Raleway, sans-serif',
+            fontSize:      '14px',
+            color:         'rgba(235,220,255,0.78)',
+            textShadow:    '0 1px 6px rgba(0,0,0,0.4)',
+            letterSpacing: '0.05em',
+            margin:        0,
+            textAlign:     'center',
+          }}>
+            ✌️ Show a peace sign when your question is ready
+          </p>
+        ) : (
+          <p style={{
+            fontFamily:    'Raleway, sans-serif',
+            fontSize:      '14px',
+            color:         'rgba(235,220,255,0.78)',
+            textShadow:    '0 1px 6px rgba(0,0,0,0.4)',
+            letterSpacing: '0.05em',
+            margin:        0,
+            textAlign:     'center',
+          }}>
+            Click when ready
+          </p>
+        )}
 
         {/* Skip link */}
         <button

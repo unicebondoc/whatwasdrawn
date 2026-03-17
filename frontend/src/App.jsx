@@ -492,6 +492,25 @@ export default function App() {
     drawFromSelection, reset, retryLoadDeck,
   } = useOracle()
 
+  // ── Camera toggle (persisted) ─────────────────────────────────────────────
+  const [cameraEnabled, setCameraEnabled] = useState(() => {
+    try {
+      const raw = localStorage.getItem('wwd_camera_enabled')
+      if (raw === null) return true
+      return raw === 'true'
+    } catch {
+      return true
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('wwd_camera_enabled', String(cameraEnabled))
+    } catch {
+      // ignore
+    }
+  }, [cameraEnabled])
+
   const deckPileRef      = useRef(null)
   const questionInputRef = useRef('')
 
@@ -573,6 +592,26 @@ export default function App() {
   })
   const [showSoftGate, setShowSoftGate] = useState(false)
   const lastCountedWhisperRef = useRef(null)
+
+  const shouldGateBeforeReading = useCallback(() => {
+    if (isPreview) return false
+    try {
+      const count = parseInt(localStorage.getItem(COUNT_KEY) || '0') || 0
+      // keep state in sync for UI; gating must rely on storage (survives refresh)
+      if (count !== readingCount) setReadingCount(count)
+      return count >= 3
+    } catch {
+      return readingCount >= 3
+    }
+  }, [COUNT_KEY, isPreview, readingCount])
+
+  const startReadingFromSelection = useCallback(() => {
+    if (shouldGateBeforeReading()) {
+      setShowSoftGate(true)
+      return
+    }
+    drawFromSelection(selectedCardsRef.current, userQuestion)
+  }, [shouldGateBeforeReading, drawFromSelection, userQuestion])
 
   const handleWhisperRevealed = useCallback(() => {
     if (isPreview) return
@@ -684,13 +723,9 @@ export default function App() {
       if (phase === 'spread' || phase === 'reading') { handleReset(); return }
     }
     if (gestureName === 'open_palm' && phase === 'spread' && selectedCountRef.current === MAX_SELECTIONS) {
-      if (!isPreview && readingCount >= 3) {
-        setShowSoftGate(true)
-        return
-      }
-      drawFromSelection(selectedCardsRef.current, userQuestion)
+      startReadingFromSelection()
     }
-  }, [phase, userQuestion, beginReading, submitQuestion, handleReset, drawFromSelection, isPreview, readingCount])
+  }, [phase, startReadingFromSelection, beginReading, submitQuestion, handleReset])
 
   const handleBothPalmsOpen = useCallback(() => {
     if (phase === 'intro') beginReading()
@@ -737,7 +772,7 @@ export default function App() {
     >
       <StarField count={120} />
 
-      {phase === 'spread' && (
+      {phase === 'spread' && cameraEnabled && (
         <FingerCursor
           posRef={cursorPosRef}
           pinchingRef={isPinchingRef}
@@ -747,7 +782,13 @@ export default function App() {
 
       {/* ══════════ PHASE 1: INTRO ══════════ */}
       <AnimatePresence>
-        {phase === 'intro' && <PhaseIntro key="intro" onBegin={beginReading} />}
+        {phase === 'intro' && (
+          <PhaseIntro
+            key="intro"
+            onBegin={beginReading}
+            cameraEnabled={cameraEnabled}
+          />
+        )}
       </AnimatePresence>
 
       {/* ══════════ PHASE 2: QUESTION ══════════ */}
@@ -758,6 +799,7 @@ export default function App() {
             onSubmit={submitQuestion}
             onSkip={() => submitQuestion('')}
             onQuestionChange={q => { questionInputRef.current = q }}
+            cameraEnabled={cameraEnabled}
           />
         )}
       </AnimatePresence>
@@ -835,7 +877,9 @@ export default function App() {
                   textAlign:     'center',
                   pointerEvents: 'none',
                 }}>
-                  👆 Point at a card to hover &nbsp;·&nbsp; 🤏 Pinch like you're sizing something tiny to select
+                  {cameraEnabled
+                    ? '👆 Point at a card to hover · 🤏 Pinch like you’re sizing something tiny to select'
+                    : 'Click a card to select · Camera is off'}
                 </p>
               )}
             </div>
@@ -873,7 +917,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    onClick={() => drawFromSelection(selectedCards, userQuestion)}
+                    onClick={() => startReadingFromSelection()}
                     className="btn-mystical-primary"
                     style={{ whiteSpace: 'nowrap', fontSize: '12px', padding: '11px 28px' }}
                   >
@@ -1159,23 +1203,54 @@ export default function App() {
         <SoftGate onSupport={handleSupportOracle} />
       )}
 
-      {/* ── Webcam — 100×75, bottom right ── */}
-      <div style={{
-        position: 'fixed', bottom: 16, right: 16, zIndex: 50,
-        width: 100, height: 75, borderRadius: 10, overflow: 'hidden',
-        border: '1px solid rgba(212,175,55,0.35)',
-        boxShadow: '0 0 10px rgba(212,175,55,0.1)',
-        opacity: phase === 'shuffle' ? 0 : 1,
-        pointerEvents: phase === 'shuffle' ? 'none' : 'auto',
-        transition: 'opacity 0.4s',
-      }}>
-        <WebcamFeed
-          onGesture={handleGesture}
-          onPointerMove={handlePointerMove}
-          onBothPalmsOpen={handleBothPalmsOpen}
-          isMinimized
-        />
-      </div>
+      {/* ── Camera toggle (hidden on landing only) ── */}
+      {phase !== 'intro' && (
+        <button
+          type="button"
+          onClick={() => setCameraEnabled(v => !v)}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 50,
+            background: 'rgba(20, 10, 45, 0.6)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(180, 140, 255, 0.25)',
+            borderRadius: 30,
+            padding: '10px 18px',
+            fontSize: 13,
+            fontFamily: 'Raleway, sans-serif',
+            color: 'rgba(210, 190, 255, 0.85)',
+            cursor: 'pointer',
+            transition: 'border-color 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(180, 140, 255, 0.5)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(180, 140, 255, 0.25)' }}
+        >
+          {cameraEnabled ? '📷 Camera on' : '📷 Camera off'}
+        </button>
+      )}
+
+      {/* ── Webcam — 100×75, bottom right (hidden when camera off) ── */}
+      {cameraEnabled && (
+        <div style={{
+          position: 'fixed', bottom: 72, right: 24, zIndex: 49,
+          width: 100, height: 75, borderRadius: 10, overflow: 'hidden',
+          border: '1px solid rgba(212,175,55,0.35)',
+          boxShadow: '0 0 10px rgba(212,175,55,0.1)',
+          opacity: phase === 'shuffle' ? 0 : 1,
+          pointerEvents: phase === 'shuffle' ? 'none' : 'auto',
+          transition: 'opacity 0.4s',
+        }}>
+          <WebcamFeed
+            onGesture={handleGesture}
+            onPointerMove={handlePointerMove}
+            onBothPalmsOpen={handleBothPalmsOpen}
+            isMinimized
+          />
+        </div>
+      )}
     </div>
   )
 }
