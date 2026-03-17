@@ -477,6 +477,19 @@ textarea::placeholder {
   animation: bob 1.8s ease-in-out infinite;
 }
 
+@keyframes pulse-border {
+  0%, 100% { 
+    border-color: rgba(255,220,120,0.35); 
+  }
+  50% { 
+    border-color: rgba(255,220,120,0.75); 
+  }
+}
+
+.wwd-peace-pill {
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
