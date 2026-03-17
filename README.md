@@ -1,14 +1,21 @@
-# What Was Drawn — Quiet Whiskers Oracle
+# What Was Drawn
+### A gesture-controlled oracle card experience.
 
-> *A gesture-powered AI oracle card reading platform. Draw cards with your hands. Receive wisdom from the stars.*
+✨ No clicks. No taps. Just your hands.
 
-Built by Unice Bondoc (Life of Mooni) · whatwasdrawn.com
+Point. Pinch. Open your palm. Let fate speak.
 
-![What Was Drawn](https://img.shields.io/badge/oracle-Quiet%20Whiskers-a066ff?style=for-the-badge)
-![OpenAI](https://img.shields.io/badge/AI-OpenAI%20GPT--4o-412991?style=for-the-badge&logo=openai)
-![React](https://img.shields.io/badge/frontend-React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react)
-![FastAPI](https://img.shields.io/badge/backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
-![Docker](https://img.shields.io/badge/container-Docker-2496ED?style=for-the-badge&logo=docker)
+→ **Live:** https://whatwasdrawn.com  
+→ **Creator:** [Unice Bondoc](https://unicebondoc.com) 
+   · [Ko-fi](https://ko-fi.com/lifeofmooni)
+
+---
+
+### How it works
+- 👆 **Point** at a card to hover
+- 🤏 **Pinch** like you're sizing something tiny to select  
+- 🤚 **Open your palm** to reveal your reading
+- 👍👍 **Two thumbs up** to begin again
 
 ---
 
