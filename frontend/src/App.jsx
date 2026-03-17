@@ -1222,18 +1222,33 @@ export default function App() {
         Your camera never leaves your device. No video is recorded, stored, or transmitted — ever. Gesture detection runs 100% locally in your browser.
       </div>
 
-      {/* ── Webcam box + overlay toggle ── */}
-      <div style={{
-        bottom: 24, right: 24, zIndex: 9999,
-        width: 100, height: 75, borderRadius: 10, overflow: 'hidden',
-        border: '1px solid rgba(212,175,55,0.35)',
-        boxShadow: '0 0 10px rgba(212,175,55,0.1)',
-        opacity: phase === 'shuffle' ? 0 : 1,
-        pointerEvents: phase === 'shuffle' ? 'none' : 'auto',
-        transition: 'opacity 0.4s',
-        position: 'fixed',
-      }}>
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* ── Webcam box + toggle (below, centered) ── */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
+          opacity: phase === 'shuffle' ? 0 : 1,
+          pointerEvents: phase === 'shuffle' ? 'none' : 'auto',
+          transition: 'opacity 0.4s',
+        }}
+      >
+        <div
+          style={{
+            width: 100,
+            height: 75,
+            borderRadius: 10,
+            overflow: 'hidden',
+            border: '1px solid rgba(212,175,55,0.35)',
+            boxShadow: '0 0 10px rgba(212,175,55,0.1)',
+            position: 'relative',
+          }}
+        >
           {cameraEnabled ? (
             <WebcamFeed
               onGesture={handleGesture}
@@ -1252,32 +1267,27 @@ export default function App() {
               }}
             />
           )}
-
-          <button
-            type="button"
-            onClick={() => setCameraEnabled(v => !v)}
-            style={{
-              position: 'absolute',
-              bottom: 8,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 10,
-              padding: '4px 10px',
-              fontSize: 11,
-              fontFamily: 'Raleway, sans-serif',
-              borderRadius: 20,
-              background: 'rgba(10, 5, 25, 0.7)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(180, 140, 255, 0.35)',
-              color: 'rgba(220, 200, 255, 0.85)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {cameraEnabled ? '📷 on' : '📷 off'}
-          </button>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setCameraEnabled(v => !v)}
+          style={{
+            padding: '4px 10px',
+            fontSize: 11,
+            fontFamily: 'Raleway, sans-serif',
+            borderRadius: 20,
+            background: 'rgba(10, 5, 25, 0.7)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: '1px solid rgba(180, 140, 255, 0.35)',
+            color: 'rgba(220, 200, 255, 0.85)',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {cameraEnabled ? '📷 on' : '📷 off'}
+        </button>
       </div>
     </div>
   )
