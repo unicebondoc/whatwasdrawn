@@ -492,20 +492,61 @@ textarea::placeholder {
 
 /* ── Mobile responsive overrides ──────────────────────────────────────────── */
 @media (max-width: 599px) {
-  /* Hide verbose safety notice — reading phase is cramped on mobile */
+  /* Hide verbose safety notice on small screens */
   .wwd-safety-notice {
     display: none !important;
   }
 
-  /* Slightly larger cam box on mobile so it's still usable */
+  /* Intro: centered content, not top-aligned (keep vertically centered on short screens) */
+  .wwd-phase-intro-scroll {
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Question phase: less top padding on mobile so content fits with keyboard */
+  .wwd-phase-question-scroll {
+    padding-top: 48px !important;
+    padding-bottom: 160px !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Smaller cam box on mobile */
   .wwd-cam-box {
-    width: 72px !important;
-    height: 54px !important;
+    width: 64px !important;
+    height: 48px !important;
+  }
+
+  /* Card slot panel: tighter on mobile */
+  .wwd-slot-panel {
+    padding: 10px 10px 12px !important;
+  }
+
+  /* Card slot row: tighter gap */
+  .wwd-slot-row {
+    gap: 8px !important;
+  }
+
+  /* Spread hint: smaller */
+  .wwd-spread-hint {
+    font-size: 11px !important;
+    max-width: 240px;
+  }
+
+  /* Reading grid: single column on mobile */
+  .wwd-reading-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Reading card: smaller on mobile */
+  .wwd-reading-card {
+    width: 130px !important;
+    height: 195px !important;
   }
 }
 
 @media (min-width: 600px) {
-  /* Restore desktop size */
+  /* Restore desktop cam box size */
   .wwd-cam-box {
     width: 100px !important;
     height: 75px !important;

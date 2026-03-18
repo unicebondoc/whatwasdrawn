@@ -64,11 +64,13 @@ export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange, came
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.4 } }}
+      className="wwd-phase-question-scroll"
       style={{
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: '0 24px',
+        alignItems: 'center', justifyContent: 'flex-start',
+        overflowY: 'auto',
+        padding: '80px 24px 120px',
       }}
     >
       {/* Question prompt */}
@@ -104,7 +106,6 @@ export default function PhaseQuestion({ onSubmit, onSkip, onQuestionChange, came
           onChange={handleChange}
           placeholder="Breathe in. What has been weighing on you?"
           rows={3}
-          autoFocus
           style={{
             width:                '100%',
             boxSizing:            'border-box',

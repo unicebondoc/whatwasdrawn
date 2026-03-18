@@ -171,11 +171,12 @@ export default function PhaseIntro({ onBegin, cameraEnabled = true }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.55 } }}
+      className="wwd-phase-intro-scroll"
       style={{
         position: 'absolute', inset: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '24px 20px',
-        overflow: 'hidden',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '48px 20px 80px',
+        overflowY: 'auto',
       }}
     >
       {/* Background radial atmosphere */}

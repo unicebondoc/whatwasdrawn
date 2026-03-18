@@ -127,7 +127,7 @@ function ReadingCard({ cardData, index, revealed }) {
       </div>
 
       {/* Card flip */}
-      <div style={{ width: 160, height: 240, perspective: '1000px', flexShrink: 0 }}>
+      <div className="wwd-reading-card" style={{ width: 160, height: 240, perspective: '1000px', flexShrink: 0 }}>
         <div style={{
           width: '100%', height: '100%', position: 'relative',
           transformStyle: 'preserve-3d',
@@ -234,7 +234,7 @@ function ReadingCard({ cardData, index, revealed }) {
                 transition={{ delay: 0.85, duration: 0.55 }}
                 style={{
                   marginTop:            16,
-                  padding:              '28px 28px',
+                  padding:              '20px 16px',
                   background:           'rgba(20,10,45,0.5)',
                   backdropFilter:       'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -269,7 +269,7 @@ function ReadingPanel({ whisper, isLoading, onReset, onWhisperRevealed }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.5, duration: 0.7, ease: 'easeOut' }}
-      style={{ width: '100%', maxWidth: 680, margin: '68px auto 0' }}
+      style={{ width: '100%', maxWidth: 680, margin: '32px auto 0' }}
     >
       {/* Divider rule */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 40 }}>
@@ -907,21 +907,21 @@ export default function App() {
           >
             {/* Card slots — 100×145, centered above arc */}
             <div style={{
-              position: 'absolute', top: '80px', bottom: '52vh',
+              position: 'absolute', top: '60px', bottom: '48vh',
               left: 0, right: 0,
               display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: 14,
+              alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
               <div style={{
                 background: 'rgba(20,10,40,0.45)',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 borderRadius: 16,
-                padding: '20px 36px 24px',
+                padding: '12px 16px 16px',
                 border: '1px solid rgba(255,255,255,0.2)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               }}>
-                <div style={{ display: 'flex', gap: 28, alignItems: 'flex-end' }}>
+                <div className="wwd-slot-row" style={{ display: 'flex', gap: 14, alignItems: 'flex-end' }}>
                   {['Past', 'Present', 'Future'].map((label, i) => {
                     const sel  = selectedCards[i]
                     const card = sel ? deck[sel.fanIndex] : null
@@ -932,9 +932,9 @@ export default function App() {
 
               {/* Selection hint — below the slot panel */}
               {selectionCount < MAX_SELECTIONS && (
-                <p style={{
+                <p className="wwd-spread-hint" style={{
                   fontFamily:    'Raleway, sans-serif',
-                  fontSize:      '16px',
+                  fontSize:      '13px',
                   color:         'rgba(255,248,220,0.95)',
                   textShadow:    '0 2px 8px rgba(0,0,0,0.6)',
                   letterSpacing: '0.05em',
@@ -943,8 +943,8 @@ export default function App() {
                   pointerEvents: 'none',
                 }}>
                   {cameraEnabled
-                    ? '👆 Point at a card to hover · 🤏 Pinch like you’re sizing something tiny to select'
-                    : 'Click a card to select · Camera is off'}
+                    ? '👆 Point to hover · 🤏 Pinch to select'
+                    : '👆 Tap a card to select'}
                 </p>
               )}
             </div>
@@ -1041,7 +1041,7 @@ export default function App() {
             <div style={{
               position: 'relative', zIndex: 1,
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              padding: '0 32px', width: '100%', maxWidth: 960, margin: '0 auto',
+              padding: '0 16px', width: '100%', maxWidth: 960, margin: '0 auto',
             }}>
               {/* Question display */}
               {userQuestion && (
@@ -1052,7 +1052,7 @@ export default function App() {
                 </div>
               )}
 
-              <div style={{
+              <div className="wwd-reading-grid" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap: 24,
@@ -1195,22 +1195,21 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Header: escape hatch on spread/loading/reading ── */}
-      {['spread', 'loading', 'reading'].includes(phase) && (
+      {/* ── Header: spread phase only — reading phase has Begin Again at bottom ── */}
+      {phase === 'spread' && (
         <header
-          className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
+          className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3"
           style={{ background: 'linear-gradient(to bottom, rgba(10,8,20,0.8) 0%, transparent 100%)' }}
         >
-          {/* Question pill (spread phase only) */}
-          {phase === 'spread' && userQuestion ? (
+          {userQuestion ? (
             <div style={{
               fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontStyle: 'italic', fontSize: '14px',
+              fontStyle: 'italic', fontSize: '13px',
               color: 'rgba(235,225,255,0.92)',
               background: 'rgba(212,175,108,0.06)',
               border: '1px solid rgba(212,175,108,0.1)',
-              borderRadius: 16, padding: '5px 14px',
-              maxWidth: 260, overflow: 'hidden',
+              borderRadius: 16, padding: '4px 12px',
+              maxWidth: 180, overflow: 'hidden',
               textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               &ldquo;{userQuestion}&rdquo;
@@ -1223,12 +1222,12 @@ export default function App() {
               Start Over
             </button>
             <p style={{
-              margin: '6px 0 0', fontSize: '11px',
-              color: 'rgba(210,195,255,0.65)',
+              margin: '4px 0 0', fontSize: '10px',
+              color: 'rgba(210,195,255,0.55)',
               fontFamily: 'Raleway, sans-serif',
               textAlign: 'right',
             }}>
-              👍👍 or two thumbs up
+              👍👍 two thumbs up
             </p>
           </div>
         </header>
