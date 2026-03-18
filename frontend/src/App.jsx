@@ -370,6 +370,71 @@ function ReadingPanel({ whisper, isLoading, onReset, onWhisperRevealed }) {
             </a>
           </motion.div>
 
+          {/* Physical deck CTA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3.1 }}
+            style={{
+              textAlign: 'center',
+              marginTop: 28,
+              padding: '20px 24px',
+              background: 'rgba(255,220,120,0.06)',
+              border: '1px solid rgba(255,220,120,0.18)',
+              borderRadius: 16,
+              width: '100%',
+              maxWidth: 680,
+            }}
+          >
+            <p style={{
+              fontFamily: 'Cormorant Garamond, Georgia, serif',
+              fontSize: '17px',
+              fontStyle: 'italic',
+              color: 'rgba(255,248,220,0.9)',
+              margin: '0 0 6px',
+            }}>
+              🃏 Want to hold these cards in your hands?
+            </p>
+            <p style={{
+              fontFamily: 'Raleway, sans-serif',
+              fontSize: '13px',
+              color: 'rgba(210,200,240,0.65)',
+              margin: '0 0 14px',
+              letterSpacing: '0.03em',
+            }}>
+              The Quiet Whiskers Oracle deck is available as a beautiful physical card set.
+            </p>
+            <a
+              href="https://unikre.com.au"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-block',
+                textDecoration: 'none',
+                fontFamily: 'Raleway, sans-serif',
+                fontSize: '13px',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                color: 'rgba(255,240,180,0.95)',
+                background: 'rgba(255,220,80,0.12)',
+                border: '1px solid rgba(255,220,80,0.4)',
+                borderRadius: 30,
+                padding: '10px 24px',
+                transition: 'background 0.2s, border-color 0.2s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255,220,80,0.22)'
+                e.currentTarget.style.borderColor = 'rgba(255,220,80,0.7)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,220,80,0.12)'
+                e.currentTarget.style.borderColor = 'rgba(255,220,80,0.4)'
+              }}
+            >
+              ✨ Get the physical deck → unikre.com.au
+            </a>
+          </motion.div>
+
           {/* Begin a New Reading */}
           {onReset && (
             <motion.div
@@ -1203,7 +1268,7 @@ export default function App() {
         <SoftGate onSupport={handleSupportOracle} />
       )}
 
-      {/* ── Camera safety notice (global) ── */}
+      {/* ── Camera safety notice (desktop only — hidden on mobile to save space) ── */}
       <div
         style={{
           position: 'fixed',
@@ -1216,7 +1281,9 @@ export default function App() {
           color: 'rgba(200, 185, 255, 0.65)',
           fontFamily: 'Inter, sans-serif',
           pointerEvents: 'none',
+          display: 'var(--safety-notice-display, block)',
         }}
+        className="wwd-safety-notice"
       >
         <span style={{ fontSize: 12 }}>🔒</span>{' '}
         Your camera never leaves your device. No video is recorded, stored, or transmitted — ever. Gesture detection runs 100% locally in your browser.
@@ -1226,22 +1293,23 @@ export default function App() {
       <div
         style={{
           position: 'fixed',
-          bottom: 24,
-          right: 24,
+          bottom: 16,
+          right: 16,
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 8,
+          gap: 6,
           opacity: phase === 'shuffle' ? 0 : 1,
           pointerEvents: phase === 'shuffle' ? 'none' : 'auto',
           transition: 'opacity 0.4s',
         }}
       >
         <div
+          className="wwd-cam-box"
           style={{
-            width: 100,
-            height: 75,
+            width: 80,
+            height: 60,
             borderRadius: 10,
             overflow: 'hidden',
             border: '1px solid rgba(212,175,55,0.35)',

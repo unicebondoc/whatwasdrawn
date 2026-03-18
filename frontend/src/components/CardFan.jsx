@@ -1,14 +1,17 @@
 import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle } from 'react'
 
-// ── Constants (exported for DeckPile compatibility) ───────────────────────────
-export const CARD_W        = 70
-export const CARD_H        = 105
+// ── Responsive constants — scale down for narrow screens ────────────────────
+function isMobile() {
+  return typeof window !== 'undefined' && window.innerWidth < 600
+}
+
+export const CARD_W        = isMobile() ? 42  : 70
+export const CARD_H        = isMobile() ? 63  : 105
 export const TOTAL_CARDS   = 44
-export const ARC_DEG       = 120   // fan spans -60° to +60°
+export const ARC_DEG       = isMobile() ? 80  : 120  // tighter arc on mobile
 
 // Distance from pivot (screen bottom-center) to card center along card axis.
-// Controls how high the fan sits above the bottom of the screen.
-const ARC_LIFT  = 240
+const ARC_LIFT  = isMobile() ? 160 : 240
 
 // Legacy exports — DeckPile still imports these; keep them working.
 const GAP = 5
@@ -104,7 +107,7 @@ function CardInFan({ index, hoveredIndex, isSelected, dimFan, containerWidth, dw
     if (index === hoveredIndex + 1) angleDeg += 5
   }
 
-  const liftExtra = isHovered ? 62 : isNeighbor ? 8 : 0
+  const liftExtra = isHovered ? (isMobile() ? 36 : 62) : isNeighbor ? 8 : 0
   const scale     = isHovered ? 1.18 : isNeighbor ? 1.04 : 1
   const zIndex    = isHovered ? 50 : isNeighbor ? Math.max(1, index) : index + 1
   const opacity   = isSelected ? 0 : dimFan ? 0.22 : isHovered ? 1 : 0.82
@@ -331,7 +334,7 @@ const CardFan = forwardRef(function CardFan({
         left:     0,
         right:    0,
         bottom:   0,
-        height:   '44vh',
+        height:   isMobile() ? '36vh' : '44vh',
         overflow: 'visible',
       }}
     >

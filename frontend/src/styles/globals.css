@@ -490,6 +490,28 @@ textarea::placeholder {
   animation: pulse-border 2s ease-in-out infinite;
 }
 
+/* ── Mobile responsive overrides ──────────────────────────────────────────── */
+@media (max-width: 599px) {
+  /* Hide verbose safety notice — reading phase is cramped on mobile */
+  .wwd-safety-notice {
+    display: none !important;
+  }
+
+  /* Slightly larger cam box on mobile so it's still usable */
+  .wwd-cam-box {
+    width: 72px !important;
+    height: 54px !important;
+  }
+}
+
+@media (min-width: 600px) {
+  /* Restore desktop size */
+  .wwd-cam-box {
+    width: 100px !important;
+    height: 75px !important;
+  }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
