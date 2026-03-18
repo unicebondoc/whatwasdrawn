@@ -4,7 +4,7 @@ export function useMediaPipe({ onGesture, onBothPalmsOpen } = {}) {
   const videoRef  = useRef(null)
   const canvasRef = useRef(null)
   const handsRef  = useRef(null)
-  const cameraRef = useRef(null)
+  const rafIdRef  = useRef(null)   // replaces Camera class (works on mobile)
 
   // Refs so the camera loop always calls latest callbacks without re-initing (avoids restart on phase change)
   const onGestureRef       = useRef(onGesture)
@@ -167,38 +167,54 @@ export function useMediaPipe({ onGesture, onBothPalmsOpen } = {}) {
 
     async function init() {
       try {
-        const { Hands }  = await import('@mediapipe/hands')
-        const { Camera } = await import('@mediapipe/camera_utils')
+        // Only import Hands — skip Camera utility (broken on mobile Safari)
+        const { Hands } = await import('@mediapipe/hands')
         if (cancelled) return
+
+        // Lower model complexity on mobile for performance
+        const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
 
         const hands = new Hands({
           locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`,
         })
         hands.setOptions({
           maxNumHands: 2,
-          modelComplexity: 1,
-          minDetectionConfidence: 0.7,
+          modelComplexity: isMobile ? 0 : 1,
+          minDetectionConfidence: 0.65,
           minTrackingConfidence: 0.5,
         })
         hands.onResults(onResults)
         handsRef.current = hands
 
+        // Use ideal constraints — avoids rejection on mobile devices
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 640, height: 480, facingMode: 'user' },
+          video: {
+            facingMode: 'user',
+            width:  { ideal: 640 },
+            height: { ideal: 480 },
+          },
         })
         if (cancelled) { stream.getTracks().forEach(t => t.stop()); return }
 
         const video = videoRef.current
         if (!video) return
         video.srcObject = stream
+        // playsInline + muted already set in JSX; play() resolves on mobile when muted
         await video.play()
 
-        const camera = new Camera(video, {
-          onFrame: async () => { if (handsRef.current) await handsRef.current.send({ image: video }) },
-          width: 640, height: 480,
-        })
-        camera.start()
-        cameraRef.current = camera
+        // Custom RAF loop — replaces @mediapipe/camera_utils which stalls on mobile
+        const processFrame = async () => {
+          if (cancelled) return
+          if (handsRef.current && video.readyState >= 2) {
+            try {
+              await handsRef.current.send({ image: video })
+            } catch (_) {
+              // ignore frame errors (e.g. during tab switch on mobile)
+            }
+          }
+          rafIdRef.current = requestAnimationFrame(processFrame)
+        }
+        rafIdRef.current = requestAnimationFrame(processFrame)
 
         if (!cancelled) setIsReady(true)
       } catch (err) {
@@ -212,7 +228,7 @@ export function useMediaPipe({ onGesture, onBothPalmsOpen } = {}) {
     init()
     return () => {
       cancelled = true
-      cameraRef.current?.stop()
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
       handsRef.current?.close()
       videoRef.current?.srcObject?.getTracks().forEach(t => t.stop())
     }

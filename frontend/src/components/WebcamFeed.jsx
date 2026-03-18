@@ -36,7 +36,9 @@ export default function WebcamFeed({ onGesture, onPointerMove, onBothPalmsOpen, 
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{ transform: 'scaleX(-1)' }}
-        playsInline muted
+        playsInline
+        autoPlay
+        muted
       />
 
       {/* Landmark overlay (mirrored to match video) */}
